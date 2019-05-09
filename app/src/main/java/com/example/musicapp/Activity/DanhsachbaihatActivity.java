@@ -43,7 +43,7 @@ public class DanhsachbaihatActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
-    RecyclerView recyclerView;
+    RecyclerView rcvDSBH;
     FloatingActionButton floatingActionButton;
     QuangCao quangCao;
     ImageView imgDanhSachCaKhuc;
@@ -78,8 +78,8 @@ public class DanhsachbaihatActivity extends AppCompatActivity {
             public void onResponse(Call<List<BaiHat>> call, Response<List<BaiHat>> response) {
                 mangBaiHat = (ArrayList<BaiHat>) response.body();
                 danhSachBaiHatAdapter = new DanhSachBaiHatAdapter(DanhsachbaihatActivity.this, mangBaiHat);
-                recyclerView.setLayoutManager(new LinearLayoutManager(DanhsachbaihatActivity.this));
-                recyclerView.setAdapter(danhSachBaiHatAdapter);
+                rcvDSBH.setLayoutManager(new LinearLayoutManager(DanhsachbaihatActivity.this));
+                rcvDSBH.setAdapter(danhSachBaiHatAdapter);
                 eventClick();
             }
 
@@ -117,8 +117,8 @@ public class DanhsachbaihatActivity extends AppCompatActivity {
             public void onResponse(Call<List<BaiHat>> call, Response<List<BaiHat>> response) {
                 mangBaiHat = (ArrayList<BaiHat>) response.body();
                 danhSachBaiHatAdapter = new DanhSachBaiHatAdapter(DanhsachbaihatActivity.this, mangBaiHat);
-                recyclerView.setLayoutManager(new LinearLayoutManager(DanhsachbaihatActivity.this));
-                recyclerView.setAdapter(danhSachBaiHatAdapter);
+                rcvDSBH.setLayoutManager(new LinearLayoutManager(DanhsachbaihatActivity.this));
+                rcvDSBH.setAdapter(danhSachBaiHatAdapter);
                 eventClick();
             }
 
@@ -145,9 +145,9 @@ public class DanhsachbaihatActivity extends AppCompatActivity {
 
     private void anhxa() {
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
-        collapsingToolbarLayout = findViewById(R.id.ctl);
+        collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
         toolbar = findViewById(R.id.tbDanhSach);
-        recyclerView = findViewById(R.id.rcvDSBH);
+        rcvDSBH = findViewById(R.id.rcvDSBH);
         floatingActionButton = findViewById(R.id.floatingactionbutton);
         imgDanhSachCaKhuc = findViewById(R.id.imgDanhSachCaKhuc);
     }

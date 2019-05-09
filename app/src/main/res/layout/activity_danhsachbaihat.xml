@@ -16,7 +16,7 @@
         android:layout_height="300dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/ctl"
+            android:id="@+id/collapsingToolbarLayout"
             app:expandedTitleGravity="center|bottom"
             app:expandedTitleMarginBottom="33dp"
             android:background="@mipmap/ic_launcher"

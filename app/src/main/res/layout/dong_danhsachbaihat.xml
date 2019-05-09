@@ -27,17 +27,20 @@
             android:maxWidth="250dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/txtTenCaSy"
-            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtDanhSachIndex"
+            android:layout_marginLeft="-147dp"
+            android:layout_marginTop="9dp"
+            android:layout_toRightOf="@+id/txtTenBaiHat"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:text="Ca Sy"
             android:textColor="#979797"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:layout_below="@+id/txtDanhSachIndex"
-            android:layout_toRightOf="@+id/txtTenBaiHat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="20sp" />
         <ImageView
             android:id="@+id/imgluotLike"
             android:layout_marginRight="5dp"

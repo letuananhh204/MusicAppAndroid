@@ -27,12 +27,13 @@ import com.example.musicapp.R;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayMusicActivity extends AppCompatActivity {
 
     Toolbar tbPlayMusic;
     TextView txtTimeSong, txtTotalTimeSong;
-    SeekBar sbSong;
+    SeekBar sbTime;
     ImageButton imgbSuffle, imgbPre, imgbPlay, imgbNext, imgbRepeat;
     ViewPager vpPlayMusic;
     public static ArrayList<BaiHat> mangBaiHat = new ArrayList<>();
@@ -40,6 +41,10 @@ public class PlayMusicActivity extends AppCompatActivity {
     Fragment_DiaNhac fragment_diaNhac;
     Fragment_Play_Music fragment_play_music;
     MediaPlayer mediaPlayer;
+    int postition = 0;
+    boolean repeat = false;
+    boolean checkRandom = false;
+    boolean next = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +63,11 @@ public class PlayMusicActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(adapterMusic.getItem(1) != null) {
-                    if(mangBaiHat.size() > 0 ) {
+                if (adapterMusic.getItem(1) != null) {
+                    if (mangBaiHat.size() > 0) {
                         fragment_diaNhac.Playnhac(mangBaiHat.get(0).getHinhBaiHat());
                         handler.removeCallbacks(this);
-                    }else {
+                    } else {
                         handler.postDelayed(this, 300);
                     }
                 }
@@ -71,7 +76,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgbPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()) {
+                if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     imgbPlay.setImageResource(R.drawable.iconplay);
                 } else {
@@ -80,6 +85,151 @@ public class PlayMusicActivity extends AppCompatActivity {
                 }
             }
         });
+        imgbRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (repeat == false) {
+                    if (checkRandom == true) {
+                        checkRandom = false;
+                        imgbRepeat.setImageResource(R.drawable.iconsyned);
+                        imgbSuffle.setImageResource(R.drawable.iconsuffle);
+                    }
+                    imgbRepeat.setImageResource(R.drawable.iconsyned);
+                    repeat = true;
+                } else {
+                    imgbRepeat.setImageResource(R.drawable.iconrepeat);
+                    repeat = false;
+                }
+            }
+        });
+
+        imgbSuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkRandom == false) {
+                    if (repeat == true) {
+                        repeat = false;
+                        imgbSuffle.setImageResource(R.drawable.iconsuffle);
+                        imgbRepeat.setImageResource(R.drawable.iconsyned);
+                    }
+                    imgbRepeat.setImageResource(R.drawable.iconsuffle);
+                    checkRandom = true;
+                } else {
+                    imgbSuffle.setImageResource(R.drawable.iconsuffle);
+                    checkRandom = false;
+                }
+            }
+        });
+        sbTime.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
+            }
+        });
+        imgbNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mangBaiHat.size() > 0) {
+                    if (mediaPlayer.isPlaying() || mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+                    if (postition < mangBaiHat.size()) {
+                        imgbPlay.setImageResource(R.drawable.iconpause);
+                        postition++;
+                        if (repeat == true) {
+                            if (postition == 0) {
+                                postition = mangBaiHat.size();
+                            }
+                            postition--;
+                        }
+                        if (checkRandom == true) {
+                            Random random = new Random();
+                            int index = random.nextInt(mangBaiHat.size());
+                            if (index == postition) {
+                                postition = index - 1;
+                            }
+                            postition = index;
+                        }
+                        if (postition > mangBaiHat.size()) {
+                            postition = 0;
+                        }
+                        new PlayMP3().execute(mangBaiHat.get(postition).getLinkBaiHat());
+                        fragment_diaNhac.Playnhac(mangBaiHat.get(postition).getHinhBaiHat());
+                        getSupportActionBar().setTitle(mangBaiHat.get(postition).getTenBaiHat());
+                    }
+                }
+                imgbPre.setClickable(false);
+                imgbNext.setClickable(false);
+                Handler handler1 = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        imgbPre.setClickable(true);
+                        imgbNext.setClickable(true);
+                    }
+                }, 1000);
+
+            }
+        });
+        imgbPre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mangBaiHat.size() > 0) {
+                    if (mediaPlayer.isPlaying() || mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+                    if (postition < mangBaiHat.size()) {
+                        imgbPlay.setImageResource(R.drawable.iconpause);
+                        postition--;
+                        if(postition < 0) {
+                            postition = mangBaiHat.size() - 1;
+                        }
+                        if (repeat == true) {
+                            postition += 1;
+                        }
+                        if (checkRandom == true) {
+                            Random random = new Random();
+                            int index = random.nextInt(mangBaiHat.size());
+                            if (index == postition) {
+                                postition = index - 1;
+                            }
+                            postition = index;
+                        }
+
+                        new PlayMP3().execute(mangBaiHat.get(postition).getLinkBaiHat());
+                        fragment_diaNhac.Playnhac(mangBaiHat.get(postition).getHinhBaiHat());
+                        getSupportActionBar().setTitle(mangBaiHat.get(postition).getTenBaiHat());
+
+                    }
+                }
+                imgbPre.setClickable(false);
+                imgbNext.setClickable(false);
+                Handler handler1 = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        imgbPre.setClickable(true);
+                        imgbNext.setClickable(true);
+                    }
+                }, 1000);
+
+            }
+        });
+
     }
 
     private void getDataFromIntent() {
@@ -102,7 +252,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         tbPlayMusic = findViewById(R.id.tbPlayMusic);
         txtTimeSong = findViewById(R.id.txtTimeSong);
         txtTotalTimeSong = findViewById(R.id.txtTotalTimeSong);
-        sbSong = findViewById(R.id.sbSong);
+        sbTime = findViewById(R.id.sbSong);
         imgbSuffle = findViewById(R.id.imgbSuffle);
         imgbPre = findViewById(R.id.imgbPre);
         imgbPlay = findViewById(R.id.imgbPlay);
@@ -115,6 +265,8 @@ public class PlayMusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                mediaPlayer.stop();
+                mangBaiHat.clear();
             }
         });
         tbPlayMusic.setTitleTextColor(Color.WHITE);
@@ -125,7 +277,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         adapterMusic.addFragment(fragment_diaNhac);
         vpPlayMusic.setAdapter(adapterMusic);
         fragment_diaNhac = (Fragment_DiaNhac) adapterMusic.getItem(1);
-        if(mangBaiHat.size() > 0 ) {
+        if (mangBaiHat.size() > 0) {
             getSupportActionBar().setTitle(mangBaiHat.get(0).getTenBaiHat());
             new PlayMP3().execute(mangBaiHat.get(0).getLinkBaiHat());
             imgbPlay.setImageResource(R.drawable.iconpause);
@@ -165,7 +317,7 @@ public class PlayMusicActivity extends AppCompatActivity {
     private void TimeSong() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
         txtTotalTimeSong.setText(simpleDateFormat.format(mediaPlayer.getDuration()));
-        sbSong.setMax(mediaPlayer.getDuration());
+        sbTime.setMax(mediaPlayer.getDuration());
     }
 
 }
