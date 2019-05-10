@@ -162,12 +162,13 @@ public class PlayMusicActivity extends AppCompatActivity {
                             }
                             postition = index;
                         }
-                        if (postition > mangBaiHat.size()) {
+                        if (postition == mangBaiHat.size()) {
                             postition = 0;
                         }
                         new PlayMP3().execute(mangBaiHat.get(postition).getLinkBaiHat());
                         fragment_diaNhac.Playnhac(mangBaiHat.get(postition).getHinhBaiHat());
                         getSupportActionBar().setTitle(mangBaiHat.get(postition).getTenBaiHat());
+                        UpdateTime();
                     }
                 }
                 imgbPre.setClickable(false);
@@ -195,7 +196,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                     if (postition < mangBaiHat.size()) {
                         imgbPlay.setImageResource(R.drawable.iconpause);
                         postition--;
-                        if(postition < 0) {
+                        if (postition < 0) {
                             postition = mangBaiHat.size() - 1;
                         }
                         if (repeat == true) {
@@ -213,7 +214,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                         new PlayMP3().execute(mangBaiHat.get(postition).getLinkBaiHat());
                         fragment_diaNhac.Playnhac(mangBaiHat.get(postition).getHinhBaiHat());
                         getSupportActionBar().setTitle(mangBaiHat.get(postition).getTenBaiHat());
-
+                        UpdateTime();
                     }
                 }
                 imgbPre.setClickable(false);
@@ -311,6 +312,7 @@ public class PlayMusicActivity extends AppCompatActivity {
             }
             mediaPlayer.start();
             TimeSong();
+            UpdateTime();
         }
     }
 
@@ -318,6 +320,77 @@ public class PlayMusicActivity extends AppCompatActivity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
         txtTotalTimeSong.setText(simpleDateFormat.format(mediaPlayer.getDuration()));
         sbTime.setMax(mediaPlayer.getDuration());
+    }
+
+    private void UpdateTime() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    sbTime.setProgress(mediaPlayer.getCurrentPosition());
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss:");
+                    txtTimeSong.setText(simpleDateFormat.format(mediaPlayer.getCurrentPosition()));
+                    handler.postDelayed(this, 300);
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            next = true;
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        }, 300);
+        final Handler handler1 = new Handler();
+        handler1.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (next == true) {
+                    if (postition < mangBaiHat.size()) {
+                        imgbPlay.setImageResource(R.drawable.iconpause);
+                        postition--;
+                        if (postition < 0) {
+                            postition = mangBaiHat.size() - 1;
+                        }
+                        if (repeat == true) {
+                            postition += 1;
+                        }
+                        if (checkRandom == true) {
+                            Random random = new Random();
+                            int index = random.nextInt(mangBaiHat.size());
+                            if (index == postition) {
+                                postition = index - 1;
+                            }
+                            postition = index;
+                        }
+
+                        new PlayMP3().execute(mangBaiHat.get(postition).getLinkBaiHat());
+                        fragment_diaNhac.Playnhac(mangBaiHat.get(postition).getHinhBaiHat());
+                        getSupportActionBar().setTitle(mangBaiHat.get(postition).getTenBaiHat());
+
+                    }
+                    imgbPre.setClickable(false);
+                    imgbNext.setClickable(false);
+                    Handler handler1 = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            imgbPre.setClickable(true);
+                            imgbNext.setClickable(true);
+                        }
+                    }, 1000);
+                    next = false;
+                    handler1.removeCallbacks(this);
+                } else {
+                    handler1.postDelayed(this, 1000);
+                }
+            }
+        }, 1000);
     }
 
 }
